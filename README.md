@@ -1,142 +1,88 @@
-# DevPulse Dashboard
+# 🍽️ Zomato Clone — NGXS Mastery Roadmap (10 Days)
 
-A 10-day Angular learning project focused on `HttpClient`, RxJS operators, and Angular Signals. Built with Angular 21 standalone components — no `NgModule`, no UI library, no custom backend.
+A complete, day-by-day learning plan to master **NGXS state management** by building a Zomato-like food delivery app.
 
-## Tech Stack
+---
 
-| Layer | Technology |
-|---|---|
-| Framework | Angular 21 (standalone components, signals) |
-| HTTP | Angular `HttpClient` |
-| Reactivity | RxJS operators + Angular Signals |
-| Mock Backend | `json-server` (local REST from `db.json`) |
-| Real APIs | JSONPlaceholder, GitHub REST API v3 |
-| Forms | Reactive Forms |
-| Testing | Vitest (via Angular CLI) |
-| SSR | `@angular/ssr` + Express |
+## 🎯 Tech Stack
 
-## Getting Started
+- **Angular 21** (standalone components, signals, zoneless)
+- **NGXS v21** (state management)
+- **NG-ZORRO v21** (UI components)
+- **TypeScript 5+**
+- **json-server** (fake REST API)
+- **HTML5 / CSS3 / LESS**
 
-**Terminal 1 — mock backend:**
-```bash
-json-server --watch db.json --port 3000
-```
+---
 
-**Terminal 2 — dev server:**
-```bash
-npm start
-```
+## 🗺️ The 10-Day Roadmap
 
-Open `http://localhost:4200`.
+| Day | Focus | File |
+|-----|-------|------|
+| 1 | Foundation: project setup, json-server, NG-ZORRO, first `@State` | [day-01-foundation.md](./day-01-foundation.md) |
+| 2 | Actions, Dispatch, StateContext, async API calls | [day-02-actions-dispatch.md](./day-02-actions-dispatch.md) |
+| 3 | Selectors deep-dive: `@Selector`, Signals, memoization, joining | [day-03-selectors.md](./day-03-selectors.md) |
+| 4 | State Operators: `patch`, `append`, `updateItem`, `removeItem`, `compose` | [day-04-state-operators.md](./day-04-state-operators.md) |
+| 5 | Plugins Part 1: Logger + Devtools + Storage | [day-05-plugins-part1.md](./day-05-plugins-part1.md) |
+| 6 | Plugins Part 2: Router plugin + Forms plugin | [day-06-plugins-part2.md](./day-06-plugins-part2.md) |
+| 7 | Action Life Cycle: cancellation, Actions Stream, side effects | [day-07-action-lifecycle.md](./day-07-action-lifecycle.md) |
+| 8 | Life-cycle hooks, lazy loading, feature states | [day-08-lifecycle-lazy.md](./day-08-lifecycle-lazy.md) |
+| 9 | Advanced: Meta selectors, custom plugins, error handling | [day-09-advanced.md](./day-09-advanced.md) |
+| 10 | Unit testing, optimisation, production polish | [day-10-testing-polish.md](./day-10-testing-polish.md) |
 
-## Commands
+---
 
-```bash
-npm start          # dev server (http://localhost:4200)
-npm run build      # production build → dist/
-npm test           # run unit tests with Vitest
-```
-
-## 10-Day Roadmap
-
-| Day | Topic | Status |
-|-----|-------|--------|
-| 01 | Project setup + first HTTP GET | ✅ Done |
-| 02 | CRUD operations + typed responses | ✅ Done |
-| 03 | `map`, `tap`, `filter`, `catchError` | ✅ Done |
-| 04 | `switchMap` + `debounceTime` (live search) | ✅ Done |
-| 05 | `forkJoin` + `mergeMap` (parallel calls) | ✅ Done |
-| 06 | `exhaustMap` + `takeUntilDestroyed` | ✅ Done |
-| 07 | HTTP interceptors (auth + logging) | ✅ Done |
-| 08 | Signals + `BehaviorSubject` state | ✅ Done |
-| 09 | Real GitHub API + pagination | 🔲 Pending |
-| 10 | Lazy loading + deploy | 🔲 Pending |
-
-Per-day guides with code, concepts, and checkpoints are in `devpulse-plan/days/`.
-
-## Data Sources
-
-| Source | URL | Used for |
-|---|---|---|
-| `json-server` | `http://localhost:3000` | posts, users, todos CRUD (Days 1–8) |
-| JSONPlaceholder | `https://jsonplaceholder.typicode.com` | read-only fallback data |
-| GitHub REST API | `https://api.github.com` | repo search + pagination (Day 9) |
-
-API base URLs are configured in `src/environments/environment.ts`.
-
-## Project Structure
+## 📂 Final Project Structure
 
 ```
-src/app/
-├── core/
-│   ├── models/         # Post, PostPayload, User, UserApiResponse, Todo, DashboardData
-│   ├── services/       # postservice, userservice, dashboard, todo
-│   └── interceptors/   # auth, logging, global-error interceptors ✅
-├── shared/
-│   └── components/     # error-banner, loading-spinner (scaffolded, not yet wired)
-├── features/
-│   ├── posts/          # Days 1–2: PostList + PostForm — full CRUD ✅
-│   ├── users/          # Day 3: UserList — map + catchError ✅
-│   ├── search/         # Day 4: UserSearch — switchMap + debounceTime ✅
-│   ├── dashboard/      # Day 5: Dashboard — forkJoin + mergeMap ✅
-│   └── github/         # Day 9: GitHub API + pagination (not yet built)
-└── layout/             # Shell with sidebar + header (not yet built)
+zomato-clone/
+├── db.json                              # json-server database
+├── src/app/
+│   ├── core/
+│   │   ├── models/                      # Restaurant, MenuItem, Cart, Order, User
+│   │   └── services/                    # HTTP services
+│   ├── shared/state/                    # Global states (auth, cart)
+│   ├── features/
+│   │   ├── restaurants/state/
+│   │   ├── menu/state/
+│   │   ├── cart/state/
+│   │   ├── orders/state/
+│   │   └── user/state/
+│   └── app.config.ts                    # provideStore + plugins
 ```
 
-## Implementation Summary
+---
 
-### Day 01 — Project Setup + First HTTP GET
-- Scaffolded Angular 21 standalone app with SSR, `json-server` mock backend, and environment files
-- Created `Post` model and `PostService` with `getAllPosts()` returning `Observable<Post[]>`
-- `PostList` component fetches and renders posts using the `async` pipe — no manual `.subscribe()`
-- **Concepts:** `HttpClient`, `provideHttpClient(withFetch())`, `Observable<T>`, `async` pipe
+## ✅ How to use these files
 
-### Day 02 — CRUD Operations + Typed Responses
-- Extended `PostService` with `createPost()`, `updatePost()`, `deletePost()` using typed payloads
-- Introduced `PostPayload` interface (omits `id`) for create/update requests
-- Built `PostForm` component with Reactive Forms; `HttpHeaders` set for mutation requests
-- **Concepts:** `HttpClient` POST/PUT/DELETE, `PostPayload` pattern, `ReactiveFormsModule`, `HttpHeaders`
+1. Open **one file per day** — each is self-contained.
+2. Tick the **checkboxes** as you complete each task.
+3. Copy the code blocks into your project.
+4. Use the **Reflection** section at the bottom to lock in learning.
+5. Don't skip days — concepts build on each other.
 
-### Day 03 — `map`, `tap`, `filter`, `catchError`
-- Created `UserApiResponse` → `User` dual-model pattern; shape trimming done in the service layer
-- `Userservice.getUsers()` pipeline: `tap` (debug log) → `map` (trim nested fields) → `filter` (skip empty) → `catchError` (return `of([])`)
-- `UserList` component with lazy-loaded route; displays trimmed user data via `async` pipe
-- **Concepts:** `map`, `tap`, `filter`, `catchError`, `of()`, dual-model API response mapping
+---
 
-### Day 04 — `switchMap` + `debounceTime` (Live Search)
-- `UserSearch` component drives search via a `FormControl` value-changes stream
-- Pipeline: `startWith('')` → `debounceTime(300)` → `distinctUntilChanged` → `switchMap` → `catchError`
-- `switchMap` cancels any in-flight request when a new keystroke arrives — only the latest query survives
-- **Concepts:** `switchMap`, `debounceTime`, `distinctUntilChanged`, `startWith`, `FormControl`
+## 🆘 Reference Links
 
-### Day 05 — `forkJoin` + `mergeMap` (Parallel Calls)
-- `Dashboard` service fires three HTTP calls simultaneously with `forkJoin({posts, users, todos})`
-- `map` derives `DashboardData` (totals + completed/pending counts) from the combined result
-- `getUsersWithPostCount()` uses `mergeMap` to fan out a per-user post-count fetch for all users concurrently
-- **Concepts:** `forkJoin`, `mergeMap`, parallel HTTP, result combining with `map`
+- NGXS Docs → https://www.ngxs.io/
+- NG-ZORRO Docs → https://ng.ant.design/docs/introduce/en
+- Angular Docs → https://angular.dev/
+- json-server → https://github.com/typicode/json-server
 
-### Day 06 — `exhaustMap` + `takeUntilDestroyed`
-- `PostForm` submit flow refactored around a `Subject<PostPayload>` trigger
-- `exhaustMap` wraps the create/update HTTP call — while a request is in flight, further submit clicks are silently ignored, preventing duplicate POSTs
-- `takeUntilDestroyed()` added to the submit subscription and to the delete subscription in `PostList`
-- **Concepts:** `exhaustMap`, `Subject`, `takeUntilDestroyed`, `DestroyRef`
+---
 
-### Day 07 — HTTP Interceptors (Auth + Logging)
-- **`authInterceptor`** — reads a token from `localStorage`, clones the request with `req.clone()` to add `Authorization: Bearer <token>`, applied only to `localhost:3000` (public APIs pass through unchanged)
-- **`loggingInterceptor`** — generates a random request ID, logs `▶ METHOD URL` on send and `✓ STATUS (Nms)` on response via `tap()` on the `HttpEvent` stream; uses `HttpResponse` type guard to skip non-final events
-- **`errorInterceptor`** — `catchError` handler for 401 (token expiry warning) and status 0 (network unreachable); rethrows so individual services can still handle errors locally
-- All three imported in `app.config.ts`; `withInterceptors([loggingInterceptor, authInterceptor, errorInterceptor])` is ready to uncomment
-- **Concepts:** `HttpInterceptorFn`, `req.clone()`, `withInterceptors`, `tap` on response stream, `HttpResponse` type guard, `catchError`, `HttpErrorResponse`, interceptor chain order
+## 📊 Progress Tracker
 
-### Day 08 — Signals + State Management
-- `PostService` migrated from Observable-only to signal-based state: private writable signals `_posts`, `_isLoading`, `_error` exposed as read-only via `.asReadonly()`
-- `computed()` derives `postCount`, `hasPosts`, and `myPosts` (filtered to `userId === 1`) from the posts signal — no extra subscriptions needed
-- `effect()` in the constructor logs post count and loading state whenever either signal changes — reactive side-effect without a subscription
-- `getAllPosts()` changed to `void` return; it drives the signal update pipeline directly (`.set()` on next, `.set()` on error)
-- Mutation methods (`createPost`, `updatePost`, `deletePost`) still return `Observable<T>` but use `tap()` to call `_posts.update()` — single source of truth updated in the service, not the component
-- `PostList` reads `postService.posts`, `postService.isLoading`, and `postService.error` directly as signals — no `async` pipe or manual subscribe needed for list rendering
-- **Concepts:** `signal()`, `computed()`, `effect()`, `.asReadonly()`, `.update()`, `.set()`, mixing Signals with RxJS `tap()`
+- [ ] Day 1 — Foundation
+- [ ] Day 2 — Actions & Dispatch
+- [ ] Day 3 — Selectors
+- [ ] Day 4 — State Operators
+- [ ] Day 5 — Plugins Part 1
+- [ ] Day 6 — Plugins Part 2
+- [ ] Day 7 — Action Life Cycle
+- [ ] Day 8 — Life-cycle & Lazy Loading
+- [ ] Day 9 — Advanced Concepts
+- [ ] Day 10 — Testing & Polish
 
-## Learning Log
-
-Daily learning reflections live in `devpulse-plan/LEARNING_LOG.md`.
+Happy learning! 🚀

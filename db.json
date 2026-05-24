@@ -1,0 +1,43 @@
+{
+  "restaurants": [
+    {
+      "id": 1,
+      "name": "Spice Garden",
+      "cuisine": "Indian",
+      "rating": 4.5,
+      "deliveryTime": 30,
+      "costForTwo": 600,
+      "image": "https://picsum.photos/seed/spice/400/250",
+      "isOpen": true,
+      "city": "Bengaluru"
+    },
+    {
+      "id": 2,
+      "name": "Pizza Palace",
+      "cuisine": "Italian",
+      "rating": 4.2,
+      "deliveryTime": 25,
+      "costForTwo": 800,
+      "image": "https://picsum.photos/seed/pizza/400/250",
+      "isOpen": true,
+      "city": "Bengaluru"
+    },
+    {
+      "id": 3,
+      "name": "Sushi Sensation",
+      "cuisine": "Japanese",
+      "rating": 4.7,
+      "deliveryTime": 40,
+      "costForTwo": 1200,
+      "image": "https://picsum.photos/seed/sushi/400/250",
+      "isOpen": false,
+      "city": "Bengaluru"
+    }
+  ],
+  "menuItems": [],
+  "cart": [],
+  "orders": [],
+  "users": [{ "id": 1, "name": "Demo User", "email": "demo@test.com" }],
+  "addresses": [],
+  "favorites": []
+}
