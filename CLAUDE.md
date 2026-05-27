@@ -9,6 +9,7 @@ npm start                           # dev server at http://localhost:4200
 npm run build                       # production build → dist/
 npm test                            # run unit tests with Vitest
 npm run watch                       # build in watch mode (development)
+npm run api                         # mock REST API via json-server at http://localhost:3000
 node dist/ZomatoClone/server/server.mjs  # run SSR server after build
 ```
 
@@ -21,35 +22,60 @@ npx ng test --include="src/app/path/to/file.spec.ts"
 
 This is an Angular 21 **standalone component** app — no `NgModule` anywhere. All components declare their own `imports` array.
 
-**SSR is enabled** via `@angular/ssr` + Express. There are two bootstrap entry points:
+**Zoneless change detection** is enabled via `provideZonelessChangeDetection()` — do not rely on Zone.js-based triggering.
+
+**SSR is enabled** via `@angular/ssr` + Express. Two bootstrap entry points:
 - `src/main.ts` — browser bootstrap
 - `src/main.server.ts` + `src/server.ts` — SSR Express server
 
-**State management uses Angular Signals** (`signal()`, `computed()`, `effect()`) rather than NgRx or a service+BehaviorSubject pattern. Services expose readonly signals and mutate them internally via `.set()` / `.update()`.
+**State management uses NGXS** (`@ngxs/store`), not NgRx or signals services. The store is registered in `app.config.ts` via `provideStore([...states])`. NGXS plugins available: `@ngxs/devtools-plugin`, `@ngxs/logger-plugin`, `@ngxs/storage-plugin`.
 
-**Routing** is defined in `src/app/app.routes.ts` (client) and `src/app/app.routes.server.ts` (SSR route config). Features should use lazy-loaded routes.
+**UI components** use `ng-zorro-antd` (Ant Design for Angular). Import `Nz*Module`s in the component's `imports` array as needed.
 
-**App config** (`src/app/app.config.ts`) is where global providers go — `provideHttpClient()`, interceptors via `withInterceptors([...])`, etc. The server-side config extends this in `app.config.server.ts`.
+**Mock API** — `db.json` in the project root is served by `json-server` on port 3000 (`npm run api`). Services should point to `http://localhost:3000` during development.
 
-## Planned feature structure (from roadmap)
+**Routing** is defined in `src/app/app.routes.ts` (client) and `src/app/app.routes.server.ts` (SSR). Features use lazy-loaded routes.
+
+## Feature structure
+
+Each feature lives under `src/app/features/<feature>/` and has a `state/` subfolder:
 
 ```
-src/app/
-├── core/
-│   ├── models/         # interfaces (e.g. Post, User)
-│   ├── services/       # injectable services with signal-based state
-│   └── interceptors/   # HttpInterceptorFn functions
-├── shared/
-│   └── components/     # reusable UI components
-└── features/           # lazy-loaded feature modules (one folder per route)
+features/restaurants/
+├── state/
+│   ├── restaurants.actions.ts   # action classes in a namespace
+│   └── restaurants.state.ts     # @State class + selectors
+├── components/                  # feature-specific components
+└── restaurants.routes.ts        # lazy route config
 ```
+
+## NGXS conventions
+
+**Actions** — group in a namespace, use descriptive `type` strings:
+```ts
+export namespace RestaurantActions {
+  export class LoadAll {
+    static readonly type = '[Restaurants API] Load All';
+  }
+}
+```
+
+**State** — typed with a `StateModel` interface, decorated with `@State<T>` and `@Injectable()`:
+```ts
+@State<RestaurantStateModel>({ name: 'restaurant', defaults: { ... } })
+@Injectable()
+export class RestaurantState {}
+```
+
+**Selectors** — use `@Selector()` inside the state class; access via `store.select(RestaurantState.someSelector)` or the `@Select()` decorator in components.
+
+**Dispatch** — inject `Store` and call `store.dispatch(new RestaurantActions.LoadAll())`. Action side-effects go in `@Action` handlers in the state class, not in components.
 
 ## Key conventions
 
-- **No manual `.subscribe()`** in components for read-only data — use the `async` pipe or signals.
-- **Dual-model pattern** for HTTP responses: define a raw API shape (e.g. `UserApiResponse`) and a trimmed app model (e.g. `User`); do the mapping in the service layer with `map()`.
-- **`HttpInterceptorFn`** (functional style) — not class-based interceptors.
-- Mutation HTTP methods (`POST`/`PUT`/`DELETE`) still return `Observable<T>` from services; use `tap()` inside the service to update the signal state so components never need to manage list updates.
+- **Dual-model pattern** for HTTP responses: define a raw API shape (e.g. `RestaurantApiResponse`) and a trimmed app model (e.g. `Restaurant`); map in the service layer.
+- **`HttpInterceptorFn`** (functional style) — not class-based interceptors. Register in `app.config.ts` via `withInterceptors([...])`.
+- Models go in `src/app/core/models/`, services in `src/app/core/services/`.
 
 ## Formatting
 
@@ -57,4 +83,4 @@ Prettier is configured (`.prettierrc`): `printWidth: 100`, `singleQuote: true`, 
 
 ## Testing
 
-Tests use **Vitest** (not Karma/Jasmine). Test files are `.spec.ts` co-located with their source. Use `TestBed` from `@angular/core/testing` as normal — the Angular test utilities are compatible.
+Tests use **Vitest** (not Karma/Jasmine). Test files are `.spec.ts` co-located with their source. Use `TestBed` from `@angular/core/testing` as normal.
