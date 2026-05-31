@@ -1,10 +1,10 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+// import { RouterOutlet } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, NzLayoutModule],
+  imports: [ NzLayoutModule],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
