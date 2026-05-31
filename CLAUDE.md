@@ -2,21 +2,27 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Project context
+
+This is a **structured 10-day NGXS learning project** — a Zomato-like food delivery app built incrementally. Each day's branch adds specific NGXS concepts. Don't add features or abstractions beyond what the current day's scope requires; the project intentionally starts minimal and grows.
+
 ## Commands
 
 ```bash
-npm start                           # dev server at http://localhost:4200
-npm run build                       # production build → dist/
-npm test                            # run unit tests with Vitest
-npm run watch                       # build in watch mode (development)
-npm run api                         # mock REST API via json-server at http://localhost:3000
-node dist/ZomatoClone/server/server.mjs  # run SSR server after build
+npm start                        # dev server at http://localhost:4200
+npm run build                    # production build → dist/
+npm test                         # run unit tests with Vitest
+npm run watch                    # build in watch mode (development)
+npm run api                      # mock REST API via json-server at http://localhost:3000
+npm run serve:ssr:ZomatoClone    # run SSR server after build
 ```
 
 To run a single test file:
 ```bash
 npx ng test --include="src/app/path/to/file.spec.ts"
 ```
+
+There is no `npm run lint` script defined.
 
 ## Architecture
 
@@ -30,13 +36,31 @@ This is an Angular 21 **standalone component** app — no `NgModule` anywhere. A
 
 **State management uses NGXS** (`@ngxs/store`), not NgRx or signals services. The store is registered in `app.config.ts` via `provideStore([...states])`. NGXS plugins available: `@ngxs/devtools-plugin`, `@ngxs/logger-plugin`, `@ngxs/storage-plugin`.
 
+`developmentMode: true` is set in `provideStore()`, which deep-freezes state objects — any direct mutation will throw at runtime.
+
 **UI components** use `ng-zorro-antd` (Ant Design for Angular). Import `Nz*Module`s in the component's `imports` array as needed.
 
-**Mock API** — `db.json` in the project root is served by `json-server` on port 3000 (`npm run api`). Services should point to `http://localhost:3000` during development.
+**Mock API** — `db.json` in the project root is served by `json-server` on port 3000 (`npm run api`). Services should point to `http://localhost:3000` during development. The db has these top-level resources: `restaurants`, `menuItems`, `cart`, `orders`, `users`, `addresses`, `favorites`.
 
 **Routing** is defined in `src/app/app.routes.ts` (client) and `src/app/app.routes.server.ts` (SSR). Features use lazy-loaded routes.
 
 ## Feature structure
+
+Planned final structure (built up day by day):
+
+```
+src/app/
+├── core/
+│   ├── models/          # Restaurant, MenuItem, Cart, Order, User
+│   └── services/        # HTTP services (one per resource)
+├── shared/state/        # Global states: auth, cart
+└── features/
+    ├── restaurants/state/
+    ├── menu/state/
+    ├── cart/state/
+    ├── orders/state/
+    └── user/state/
+```
 
 Each feature lives under `src/app/features/<feature>/` and has a `state/` subfolder:
 
@@ -70,6 +94,8 @@ export class RestaurantState {}
 **Selectors** — use `@Selector()` inside the state class; access via `store.select(RestaurantState.someSelector)` or the `@Select()` decorator in components.
 
 **Dispatch** — inject `Store` and call `store.dispatch(new RestaurantActions.LoadAll())`. Action side-effects go in `@Action` handlers in the state class, not in components.
+
+**State operators** — import from `@ngxs/store` (`patch`, `append`, `updateItem`, `removeItem`, `compose`) and use inside `StateContext.setState()` to produce new state immutably.
 
 ## Key conventions
 

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Restaurant } from './../../../core/models/restaurant.model';
+import { Restaurant } from '../../../core/models/restaurant';
 import { State}  from '@ngxs/store';
 
 export interface RestaurantStateModel{
